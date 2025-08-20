@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Питание</title>
+    <style>
+        body {
+            background: #faf9f6;
+            color: #222;
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 16px 16px 90px 16px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin: 0 0 20px 0;
+            font-size: 1.8em;
+        }
+        .calorie-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .calorie-btn, .menu-btn, .calorazh-btn {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #222;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        .calorie-btn:hover, .menu-btn:hover, .calorazh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(44,62,80,0.13);
+        }
+        .menu-btn, .calorazh-btn {
+            width: 100%;
+            margin-bottom: 16px;
+        }
+        #pdf-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 16px 0;
+            display: none;
+        }
+        #pdf-canvas {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: #fff;
+        }
+        .pdf-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .pdf-controls button {
+            background: #6c4dd6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .pdf-controls button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #page-info {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1em;
+            color: #222;
+        }
+        .close-pdf {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 10px auto;
+            display: block;
+        }
+        /* Видео */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            width: 100%;
+            margin: 16px 0;
+        }
+        .video-item {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .video-preview {
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 16px 16px 0 0;
+        }
+        .video-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #000;
+        }
+        .video-caption {
+            padding: 12px 8px;
+            font-size: 1rem;
+            color: #222;
+            text-align: center;
+            background: #faf9f6;
+            border-radius: 0 0 16px 16px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+        /* Нижнее меню */
+        .bottom-nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #fff;
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 66px;
+            z-index: 100;
+            border-radius: 18px 18px 0 0;
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #888;
+            font-size: 0.93em;
+            gap: 2px;
+            transition: color 0.2s;
+            padding: 6px 0;
+            min-width: 54px;
+            max-width: 80px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .nav-item.active, .nav-item:active {
+            color: #222;
+        }
+        .nav-icon {
+            font-size: 1.34em;
+            line-height: 1;
+        }
+        .nav-label {
+            font-size: 0.91em;
+            line-height: 1.1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Питание</h1>
+        
+        <!-- Кнопка на calorazh.ru -->
+        <a href="https://calorazh.ru/" target="_blank" class="calorazh-btn">
+            Калькулятор калорий (Calorazh.ru)
+        </a>
+        
+        <!-- Кнопки калорийности -->
+        <div class="calorie-grid">
+            <button class="calorie-btn" onclick="openPdf('pdfs/1300call.pdf')">1300 ккал</button>
+            <button class="calorie-btn" onclick="openPdf('pdfs/Menyu_1400-1500_kaloriy.pdf')">1400-1500 ккал</button>
+            <button class="calorie-btn" onclick="openPdf('pdfs/Menyu1500-1600_kaloriy.pdf')">1500-1600 ккал</button>
+            <button class="calorie-btn" onclick="openPdf('pdfs/Menyu_1600-1700_kaloriy.pdf')">1600-1700 ккал</button>
+            <button class="calorie-btn" onclick="openPdf('pdfs/Menyu_1700-1800_kaloriy.pdf')">1700-1800 ккал</button>
+            <button class="calorie-btn" onclick="openPdf('pdfs/postnoe.pdf')">Постное меню</button>
+        </div>
+        
+        <!-- Видео -->
+        <div class="videos-grid">
+            <div class="video-item">
+                <div class="video-preview">
+                    <video controls width="100%" style="aspect-ratio: 9 / 16;" preload="metadata">
+                        <source src="https://storage2.bothelp.io/myuppy/a5/a519/a5196261f3cec9d980791446a8720137/urok1_1.mp4#t=0.1" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                </div>
+                <div class="video-caption">Индивидуальный подсчет калорийности</div>
+            </div>
+            <div class="video-item">
+                <div class="video-preview">
+                    <video controls width="100%" style="aspect-ratio: 9 / 16;" preload="metadata">
+                        <source src="https://storage2.bothelp.io/myuppy/47/4714/4714b0f1298aca36a961147cd66ff21b/Urok_2.mp4#t=0.1" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                </div>
+                <div class="video-caption">Индивидуальный разбор КБЖУ</div>
+            </div>
+            <div class="video-item">
+                <div class="video-preview">
+                    <video controls width="100%" style="aspect-ratio: 9 / 16;" preload="metadata">
+                        <source src="https://storage2.bothelp.io/myuppy/86/86a9/86a9725b373d1c7041f76e628e5ea154/IMG_1518.mp4#t=0.1" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                </div>
+                <div class="video-caption">Составляем рацион под свои запросы и цели</div>
+            </div>
+        </div>
+        
+        <!-- PDF контейнер -->
+        <div id="pdf-container">
+            <button class="close-pdf" onclick="closePdf()">Закрыть PDF</button>
+            <canvas id="pdf-canvas"></canvas>
+            <div class="pdf-controls">
+                <button id="prev-page">Предыдущая</button>
+                <button id="next-page">Следующая</button>
+            </div>
+            <div id="page-info"></div>
+        </div>
+    </div>
+
+    
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        const pdfContainer = document.getElementById('pdf-container');
+        const canvas = document.getElementById('pdf-canvas');
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+        const pageInfo = document.getElementById('page-info');
+
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        const scale = 1.5;
+
+        function renderPage(num) {
+            pageRendering = true;
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({ scale: scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                const renderContext = {
+                    canvasContext: canvas.getContext('2d'),
+                    viewport: viewport
+                };
+                const renderTask = page.render(renderContext);
+                renderTask.promise.then(function() {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+            pageInfo.textContent = `Страница ${num} из ${pdfDoc.numPages}`;
+            prevBtn.disabled = num <= 1;
+            nextBtn.disabled = num >= pdfDoc.numPages;
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function openPdf(pdfUrl) {
+            pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc_) {
+                pdfDoc = pdfDoc_;
+                pdfContainer.style.display = 'block';
+                pageNum = 1;
+                renderPage(pageNum);
+                pdfContainer.scrollIntoView({ behavior: 'smooth' });
+            }).catch(function(error) {
+                alert('Ошибка загрузки PDF: ' + error.message);
+            });
+        }
+
+        function closePdf() {
+            pdfContainer.style.display = 'none';
+            pdfDoc = null;
+            pageNum = 1;
+        }
+
+        prevBtn.addEventListener('click', function() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            queueRenderPage(pageNum);
+        });
+    </script>
+    <footer>
+            <nav class="bottom-nav" role="navigation" aria-label="Основное меню">
+                <a href="main.html" class="nav-item">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Главная</span>
+                </a>
+                
+            </nav>
+        </footer>
+</body>
+</html>

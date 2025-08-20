@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Марафон питания</title>
+
+  <!-- Мета для мобильных -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#101010" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <style>
+    :root{
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --green-1: #b4f24c; /* салатный */
+      --green-2: #3bd45b; /* зелёный */
+    }
+    *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      z-index: 0;
+      background: #111;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 40%, rgba(0,0,0,0.15) 100%);
+      pointer-events: none;
+    }
+
+    /* Заголовок: две строки, крупнее, с выраженной тенью */
+    .title {
+      position: absolute;
+      left: 50%;
+      top: calc(45% - 5vh);
+      transform: translate(-50%, -50%);
+      width: 90vw;
+      text-align: center;
+      z-index: 2;
+      margin: 0;
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+      font-weight: 900;
+      text-transform: uppercase;
+      /* крупнее: */
+      font-size: clamp(28px, 8.2vw, 40px);
+      /* более заметная тень, многослойная для читаемости */
+      text-shadow:
+        0 10px 30px rgba(0,0,0,0.45),
+        0 4px 14px rgba(0,0,0,0.35),
+        0 1px 0 rgba(0,0,0,0.6);
+    }
+    .title span {
+      display: block; /* перенос на вторую строку */
+    }
+
+    .cta {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(16px + var(--safe-bottom));
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: min(86vw, 420px);
+      min-height: 56px;
+      padding: 14px 22px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: #fff;
+      background: linear-gradient(90deg, var(--green-1) 0%, var(--green-2) 100%);
+      box-shadow: 0 12px 28px rgba(59, 212, 91, 0.28), 0 2px 8px rgba(0,0,0,0.25);
+      transition: transform 0.08s ease-out, filter 0.15s ease, box-shadow 0.2s ease;
+      will-change: transform, filter;
+      -webkit-user-select: none;
+      user-select: none;
+      font-size: 16px;
+    }
+    .cta:active {
+      transform: translateX(-50%) scale(0.98);
+      filter: brightness(0.98);
+      box-shadow: 0 8px 20px rgba(59, 212, 91, 0.23), 0 2px 8px rgba(0,0,0,0.22);
+    }
+
+    @media (orientation: landscape) {
+      .title {
+        top: 45%;
+        font-size: clamp(24px, 6vw, 34px);
+      }
+      .cta {
+        min-height: 52px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="screen">
+    <!-- Замените src на своё вертикальное изображение 9:16 -->
+    <img src="background.png" alt="Фон" class="bg" />
+    <div class="overlay"></div>
+
+    <!-- Две строки: Марафон / Питания -->
+    <h1 class="title">
+      <span>Марафон</span>
+      <span>Питания</span>
+    </h1>
+
+    <a class="cta" href="main.html" aria-label="Начать марафон">Начать</a>
+  </div>
+
+  <script>
+    // На мобильных иногда помогает сброс позиции скролла при повторном открытии
+    window.addEventListener('load', () => { window.scrollTo(0, 0); });
+  </script>
+</body>
+</html>
